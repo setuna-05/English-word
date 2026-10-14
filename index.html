@@ -14,59 +14,59 @@
 <script>
 /* ===== 単語データ =====
    列の順番: [No., 分類, 単語, 意味, 例文, 例文の訳, 覚え方]
-   分類は "IT" / "配信ゲーム" / "配信日常" のどれか。
+   分類は自由な名前でよい（同じ名前の単語が同じ分類になる）。
    初回起動時だけ、ここの内容が読み込まれます（その後はブラウザ内のデータが優先）。 */
 const INITIAL_WORDS = [
-  [53, "IT", "access", "アクセス、利用する／アクセス権", "Access is denied for this file.", "このファイルへのアクセスは拒否されました。", "「アクセス」と同じ。対象に近づく・利用できる状態になるイメージ。"],
-  [54, "IT", "grant", "付与する、与える、許可する", "Grant administrator rights to proceed.", "続行するには管理者権限を付与してください。", "権限や機会などを相手に与えるイメージ。"],
-  [55, "IT", "default", "既定値、初期設定", "Reset all settings to default.", "すべての設定を既定値に戻してください。", "「標準として設定されている状態」。スポーツの「不戦敗」という意味とは別なので注意。"],
-  [56, "IT", "prompt", "指示、入力を促す表示・メッセージ", "Enter your password at the prompt.", "プロンプトでパスワードを入力してください。", "コマンドプロンプトの prompt。「入力を促す表示」。動詞では「促す」（例：When prompted, enter…＝求められたら入力して）。"],
-  [57, "IT", "restrict", "制限する", "Network access is restricted.", "ネットワークへのアクセスが制限されています。", "Strict（厳しい）状態にして制限をかけること。"],
-  [58, "IT", "suspend", "一時停止する", "Your account has been suspended.", "アカウントが一時停止されました。", "sus（下に）＋pend（ぶら下げる）＝宙にぶら下げて止める。サスペンション、サスペンスも同じ語源。"],
-  [59, "IT", "override", "上書きする、優先する", "System settings will override user preferences.", "システム設定がユーザー設定より優先されます。", "Over（上に）Ride（乗る）で上書きして無効化する。"],
-  [60, "IT", "resolve", "解決する", "Restarting the PC will resolve the issue.", "PCの再起動で問題が解決します。", "re（再び）＋solve（解く）。もつれた問題を解いて片付けるイメージ。"],
-  [61, "IT", "apply", "適用する", "Click OK to apply the changes.", "OKをクリックして変更を適用してください。", "アプリ（アプリケーション）の語源。当てはめるイメージ。"],
-  [62, "IT", "temporary", "一時的な", "Delete temporary files to save space.", "容量を空けるため一時ファイルを削除します。", "Temp（テンプ）ファイルのこと。時間を限定した一時物。"],
-  [63, "IT", "exceed", "超える", "File size exceeds the maximum limit.", "ファイルサイズが最大制限を超えています。", "ex（外へ）＋ceed（進む）＝枠の外へ出る。proceed（前へ進む）、succeed と同じ -ceed。Excel（エクセル）とは別語源なので注意。"],
-  [64, "IT", "exemption", "免除、適用除外", "Add this program to the firewall exemption list.", "このプログラムをファイアウォールの除外リストに追加してください。", "exception（例外）と関連する語。exemption は義務・規則などの免除や適用除外を表す。"],
-  [65, "IT", "retrieve", "取得する、取り戻す", "Failed to retrieve user data.", "ユーザーデータの取得に失敗しました。", "レトリバー犬が獲物を取りに行って戻ってくるイメージ（retrieve が語源）。データを「復元する」は文脈によって restore がより適切。"],
-  [66, "IT", "execute", "実行する", "Execute the file as administrator.", "管理者としてファイルを実行します。", "エグゼクティブ（実行役員）や.exeファイル（実行ファイル）の語源。"],
-  [67, "IT", "allocate", "割り当てる", "Not enough memory allocated to this app.", "このアプリに割り当てられたメモリが不足しています。", "メモリや時間などの資源を、用途ごとに割り当てるイメージ。"],
-  [68, "IT", "conflict", "衝突、競合", "An IP address conflict was detected.", "IPアドレスの競合が検出されました。", "コンフリクト。複数の設定がぶつかり合うこと。"],
-  [69, "IT", "modify", "変更する", "Do you want to modify this setting?", "この設定を変更しますか？", "モッド（MOD）の語源「modify（変更・改造する）」。"],
-  [70, "IT", "destination", "目的地、送信先、保存先", "Select the destination folder.", "保存先のフォルダを選択してください。", "destination は「行き先・目的地」。ファイル操作では「保存先」や「出力先」にもなる。"],
-  [71, "IT", "initialize", "初期化する", "Initializing the device, please wait.", "デバイスを初期化中です。お待ちください。", "イニシャル（頭文字・最初）の状態に戻すこと。"],
-  [72, "IT", "bypassed", "回避された、スキップされた", "Security check was bypassed.", "セキュリティチェックが回避されました。", "バイパス道路のように、チェックを迂回して通り抜けること。"],
-  [73, "配信ゲーム", "nerf", "弱体化する", "This character got nerfed in the patch.", "このキャラはアプデで弱体化された。", "おもちゃの柔らかい銃（NERF）のように威力を弱くすること。"],
-  [74, "配信ゲーム", "buff", "強化する", "The damage was buffed in the update.", "アップデートでダメージが増加した。", "能力や性能を高めること。ゲームではキャラクターや武器などの「強化」を指す。"],
-  [75, "配信ゲーム", "carry", "チームを勝利に導く", "He carried the team to victory.", "彼がチームをキャリーして勝利に導いた。", "チームを背負って運ぶ（キャリーする）イメージ。"],
-  [76, "配信ゲーム", "spawn", "出現する、スポーンする", "Enemies spawn behind the building.", "敵が建物の後ろに出現する。", "モンスターがスポーン（発生）する。"],
-  [77, "配信ゲーム", "cooldown", "クールダウン、再使用待ち時間", "My ultimate is still on cooldown.", "ウルトがまだクールダウン中です。", "冷まして次に使えるようになるまでの待ち時間。"],
-  [78, "配信ゲーム", "stealth", "ステルス、隠密", "Use stealth to pass the guards.", "ステルスを使って警備兵に見つからずに通り抜けよう。", "ステルス戦闘機のように、見つからないように行動するイメージ。"],
-  [79, "配信ゲーム", "toxic", "有害な、攻撃的な、迷惑な（言動をする）", "That player was so toxic in chat.", "あのプレイヤーはチャットでかなり攻撃的な発言をしていた。", "「毒のある」が基本イメージ。オンラインでは暴言や嫌がらせをする言動にも使う。"],
-  [80, "配信ゲーム", "dodge", "かわす、回避する", "I dodged the attack just in time.", "間一髪で攻撃を回避した。", "ドッジボールの dodge（よける）と同じ。"],
-  [81, "配信ゲーム", "loot", "戦利品を集める、漁る", "Let us loot this house first.", "まずこの家を漁ろう。", "ルート（戦利品・ドロップアイテム）を拾うこと。"],
-  [82, "配信ゲーム", "smurf", "初心者狩りをする", "That's definitely a smurf account.", "あれは絶対にスマーフ用のアカウントだ。", "本来の実力より低いランク帯でプレイするために作った別アカウントを指すことが多い。そうした行為を smurfing と呼ぶ。青いキャラ「スマーフ」が語源という説が有力。"],
-  [83, "配信ゲーム", "tilt", "イライラしてプレイが雑になる", "Don't get tilted after losing.", "負けた後にティルト（イライラ）しないで。", "ピンボール台を傾ける（ティルト）ことからキレる状態。"],
-  [84, "配信ゲーム", "flank", "側面から攻撃する、裏取りする", "They are flanking us from the left.", "敵が左側から裏取りしてきている。", "敵の側面に回り込んで攻撃するイメージ。ゲームでは「裏取り」もよく使われる訳。"],
-  [85, "配信ゲーム", "inting", "わざと不利になる行為をする（意図的なフィード）", "Stop inting and stay safe.", "わざと突っ込んで倒されるのはやめて、安全に立ち回ろう。", "intentional feeding（意図的に敵へキルなどを与える行為）に由来するゲーム用語。使われ方はゲームによって異なる。"],
-  [86, "配信ゲーム", "feed", "敵に倒されて、相手を有利にしてしまう", "Please do not feed the enemy assassin.", "敵のアサシンにキルを与えないで。", "餌（feed）を与えるように、敵へキルや経験値などを与えて有利にしてしまうイメージ。"],
-  [87, "配信ゲーム", "taunt", "煽る、挑発する", "The boss will taunt you first.", "ボスが最初に煽ってくるよ。", "ゲーム内の挑発エモートなどのこと。"],
-  [88, "配信日常", "gotta", "〜しなければならない（have got to）", "I gotta go now, see you later.", "もう行かなきゃ、またね！", "got to の口語形（ガタ）。日常配信でよく使う。"],
-  [89, "配信日常", "kind of", "なんか、ちょっと（kinda）", "It's kind of weird today.", "今日はなんか変だね。", "「ちょっと」「なんとなく」「ある程度」。会話では kinda と短く発音・表記されることもある。"],
-  [90, "配信日常", "wholesome", "心温まる、健全な、ほほえましい", "That was such a wholesome moment.", "今のはすごく心が温まるシーンだったね。", "心が温まるような、安心できる雰囲気を表す。Whole + Health という語源説明ではなく、意味と使われ方で覚えよう。"],
-  [91, "配信日常", "cringe", "ドン引きする、痛々しい", "His joke was so cringe.", "彼のジョークはすごくドン引きだった。", "身縮み（クリンジ）するような恥ずかしさ。"],
-  [92, "配信日常", "cap", "嘘、ハッタリ", "No cap, that was amazing.", "嘘偽りなく、今のはすごかった。", "cap はスラングで「嘘・ハッタリ」。No cap は「嘘じゃなく」「マジで」という意味。"],
-  [93, "配信日常", "vibes", "雰囲気、ノリ", "Good vibes in the chat today.", "今日のチャットは雰囲気がいいね。", "バイブス（気分の高まりやその場のノリ）。"],
-  [94, "配信日常", "scam", "詐欺、騙し", "This game is a total scam.", "このゲーム、完全に詐欺じゃん。", "scam は「詐欺・詐欺的なもの」。単に「クソゲー」という意味とは限らず、金銭や宣伝などで騙されたというニュアンスがある。"],
-  [95, "配信日常", "legit", "マジで本物の、ガチな", "That clip was legit crazy.", "あのクリップはガチでヤバかった。", "Legitimate（合法な・本物の）の略（レジット）。"],
-  [96, "配信日常", "shoutout", "称賛・感謝を込めた紹介、言及", "Big shoutout to my supporters.", "応援してくれているみんなに感謝を伝えたい！", "配信などで人の名前を挙げて、感謝や称賛を伝えること。"],
-  [97, "配信日常", "hyped", "テンションが上がっている", "I am so hyped for this stream.", "この配信すごくワクワクしてる！", "Hype（ハイプ）の形容詞形。"],
-  [98, "配信日常", "banned", "BANされた、禁止された", "He got banned from Twitch.", "彼はTwitchでBANされた。", "バン（BAN・禁止）。配信でのアカウント停止。"],
-  [99, "配信日常", "baffled", "困惑した、当惑した", "I am totally baffled by this.", "これには完全に困惑してるよ。", "何かが理解できず、どう反応すればよいか分からない状態。baffling は「困惑させるような」。"],
-  [100, "配信日常", "sus", "怪しい（suspicious）", "Red is acting very sus.", "赤のプレイヤー、かなり怪しい動きをしている。", "suspicious（怪しい）の略。Among Us などのゲームやオンライン会話で使われる。"],
-  [101, "配信日常", "slaps", "（曲や食事が）最高、ヤバい", "This background music slaps.", "このBGMまじで最高だな。", "平手打ち（Slap）されるくらい衝撃的に最高なこと。"],
-  [102, "配信日常", "bet", "了解、いいよ、任せて", "Can you help me? - Bet!", "手伝ってくれる？ — いいよ！", "カジュアルな会話で「了解」「いいよ」という返事に使う。文脈によって意味が変わる。"]
+  [1, "IT", "access", "アクセス、利用する／アクセス権", "Access is denied for this file.", "このファイルへのアクセスは拒否されました。", "「アクセス」と同じ。対象に近づく・利用できる状態になるイメージ。"],
+  [2, "IT", "grant", "付与する、与える、許可する", "Grant administrator rights to proceed.", "続行するには管理者権限を付与してください。", "権限や機会などを相手に与えるイメージ。"],
+  [3, "IT", "default", "既定値、初期設定", "Reset all settings to default.", "すべての設定を既定値に戻してください。", "「標準として設定されている状態」。スポーツの「不戦敗」という意味とは別なので注意。"],
+  [4, "IT", "prompt", "指示、入力を促す表示・メッセージ", "Enter your password at the prompt.", "プロンプトでパスワードを入力してください。", "コマンドプロンプトの prompt。「入力を促す表示」。動詞では「促す」（例：When prompted, enter…＝求められたら入力して）。"],
+  [5, "IT", "restrict", "制限する", "Network access is restricted.", "ネットワークへのアクセスが制限されています。", "Strict（厳しい）状態にして制限をかけること。"],
+  [6, "IT", "suspend", "一時停止する", "Your account has been suspended.", "アカウントが一時停止されました。", "sus（下に）＋pend（ぶら下げる）＝宙にぶら下げて止める。サスペンション、サスペンスも同じ語源。"],
+  [6, "IT", "override", "上書きする、優先する", "System settings will override user preferences.", "システム設定がユーザー設定より優先されます。", "Over（上に）Ride（乗る）で上書きして無効化する。"],
+  [7, "IT", "resolve", "解決する", "Restarting the PC will resolve the issue.", "PCの再起動で問題が解決します。", "re（再び）＋solve（解く）。もつれた問題を解いて片付けるイメージ。"],
+  [8, "IT", "apply", "適用する", "Click OK to apply the changes.", "OKをクリックして変更を適用してください。", "アプリ（アプリケーション）の語源。当てはめるイメージ。"],
+  [9, "IT", "temporary", "一時的な", "Delete temporary files to save space.", "容量を空けるため一時ファイルを削除します。", "Temp（テンプ）ファイルのこと。時間を限定した一時物。"],
+  [10, "IT", "exceed", "超える", "File size exceeds the maximum limit.", "ファイルサイズが最大制限を超えています。", "ex（外へ）＋ceed（進む）＝枠の外へ出る。proceed（前へ進む）、succeed と同じ -ceed。Excel（エクセル）とは別語源なので注意。"],
+  [11, "IT", "exemption", "免除、適用除外", "Add this program to the firewall exemption list.", "このプログラムをファイアウォールの除外リストに追加してください。", "exception（例外）と関連する語。exemption は義務・規則などの免除や適用除外を表す。"],
+  [12, "IT", "retrieve", "取得する、取り戻す", "Failed to retrieve user data.", "ユーザーデータの取得に失敗しました。", "レトリバー犬が獲物を取りに行って戻ってくるイメージ（retrieve が語源）。データを「復元する」は文脈によって restore がより適切。"],
+  [13, "IT", "execute", "実行する", "Execute the file as administrator.", "管理者としてファイルを実行します。", "エグゼクティブ（実行役員）や.exeファイル（実行ファイル）の語源。"],
+  [14, "IT", "allocate", "割り当てる", "Not enough memory allocated to this app.", "このアプリに割り当てられたメモリが不足しています。", "メモリや時間などの資源を、用途ごとに割り当てるイメージ。"],
+  [15, "IT", "conflict", "衝突、競合", "An IP address conflict was detected.", "IPアドレスの競合が検出されました。", "コンフリクト。複数の設定がぶつかり合うこと。"],
+  [16, "IT", "modify", "変更する", "Do you want to modify this setting?", "この設定を変更しますか？", "モッド（MOD）の語源「modify（変更・改造する）」。"],
+  [17, "IT", "destination", "目的地、送信先、保存先", "Select the destination folder.", "保存先のフォルダを選択してください。", "destination は「行き先・目的地」。ファイル操作では「保存先」や「出力先」にもなる。"],
+  [18, "IT", "initialize", "初期化する", "Initializing the device, please wait.", "デバイスを初期化中です。お待ちください。", "イニシャル（頭文字・最初）の状態に戻すこと。"],
+  [19, "IT", "bypassed", "回避された、スキップされた", "Security check was bypassed.", "セキュリティチェックが回避されました。", "バイパス道路のように、チェックを迂回して通り抜けること。"],
+  [20, "配信ゲーム", "nerf", "弱体化する", "This character got nerfed in the patch.", "このキャラはアプデで弱体化された。", "おもちゃの柔らかい銃（NERF）のように威力を弱くすること。"],
+  [21, "配信ゲーム", "buff", "強化する", "The damage was buffed in the update.", "アップデートでダメージが増加した。", "能力や性能を高めること。ゲームではキャラクターや武器などの「強化」を指す。"],
+  [22, "配信ゲーム", "carry", "チームを勝利に導く", "He carried the team to victory.", "彼がチームをキャリーして勝利に導いた。", "チームを背負って運ぶ（キャリーする）イメージ。"],
+  [23, "配信ゲーム", "spawn", "出現する、スポーンする", "Enemies spawn behind the building.", "敵が建物の後ろに出現する。", "モンスターがスポーン（発生）する。"],
+  [24, "配信ゲーム", "cooldown", "クールダウン、再使用待ち時間", "My ultimate is still on cooldown.", "ウルトがまだクールダウン中です。", "冷まして次に使えるようになるまでの待ち時間。"],
+  [25, "配信ゲーム", "stealth", "ステルス、隠密", "Use stealth to pass the guards.", "ステルスを使って警備兵に見つからずに通り抜けよう。", "ステルス戦闘機のように、見つからないように行動するイメージ。"],
+  [26, "配信ゲーム", "toxic", "有害な、攻撃的な、迷惑な（言動をする）", "That player was so toxic in chat.", "あのプレイヤーはチャットでかなり攻撃的な発言をしていた。", "「毒のある」が基本イメージ。オンラインでは暴言や嫌がらせをする言動にも使う。"],
+  [27, "配信ゲーム", "dodge", "かわす、回避する", "I dodged the attack just in time.", "間一髪で攻撃を回避した。", "ドッジボールの dodge（よける）と同じ。"],
+  [28, "配信ゲーム", "loot", "戦利品を集める、漁る", "Let us loot this house first.", "まずこの家を漁ろう。", "ルート（戦利品・ドロップアイテム）を拾うこと。"],
+  [29, "配信ゲーム", "smurf", "初心者狩りをする", "That's definitely a smurf account.", "あれは絶対にスマーフ用のアカウントだ。", "本来の実力より低いランク帯でプレイするために作った別アカウントを指すことが多い。そうした行為を smurfing と呼ぶ。青いキャラ「スマーフ」が語源という説が有力。"],
+  [30, "配信ゲーム", "tilt", "イライラしてプレイが雑になる", "Don't get tilted after losing.", "負けた後にティルト（イライラ）しないで。", "ピンボール台を傾ける（ティルト）ことからキレる状態。"],
+  [31, "配信ゲーム", "flank", "側面から攻撃する、裏取りする", "They are flanking us from the left.", "敵が左側から裏取りしてきている。", "敵の側面に回り込んで攻撃するイメージ。ゲームでは「裏取り」もよく使われる訳。"],
+  [32, "配信ゲーム", "inting", "わざと不利になる行為をする（意図的なフィード）", "Stop inting and stay safe.", "わざと突っ込んで倒されるのはやめて、安全に立ち回ろう。", "intentional feeding（意図的に敵へキルなどを与える行為）に由来するゲーム用語。使われ方はゲームによって異なる。"],
+  [33, "配信ゲーム", "feed", "敵に倒されて、相手を有利にしてしまう", "Please do not feed the enemy assassin.", "敵のアサシンにキルを与えないで。", "餌（feed）を与えるように、敵へキルや経験値などを与えて有利にしてしまうイメージ。"],
+  [34, "配信ゲーム", "taunt", "煽る、挑発する", "The boss will taunt you first.", "ボスが最初に煽ってくるよ。", "ゲーム内の挑発エモートなどのこと。"],
+  [35, "配信日常", "gotta", "〜しなければならない（have got to）", "I gotta go now, see you later.", "もう行かなきゃ、またね！", "got to の口語形（ガタ）。日常配信でよく使う。"],
+  [36, "配信日常", "kind of", "なんか、ちょっと（kinda）", "It's kind of weird today.", "今日はなんか変だね。", "「ちょっと」「なんとなく」「ある程度」。会話では kinda と短く発音・表記されることもある。"],
+  [37, "配信日常", "wholesome", "心温まる、健全な、ほほえましい", "That was such a wholesome moment.", "今のはすごく心が温まるシーンだったね。", "心が温まるような、安心できる雰囲気を表す。Whole + Health という語源説明ではなく、意味と使われ方で覚えよう。"],
+  [38, "配信日常", "cringe", "ドン引きする、痛々しい", "His joke was so cringe.", "彼のジョークはすごくドン引きだった。", "身縮み（クリンジ）するような恥ずかしさ。"],
+  [39, "配信日常", "cap", "嘘、ハッタリ", "No cap, that was amazing.", "嘘偽りなく、今のはすごかった。", "cap はスラングで「嘘・ハッタリ」。No cap は「嘘じゃなく」「マジで」という意味。"],
+  [40, "配信日常", "vibes", "雰囲気、ノリ", "Good vibes in the chat today.", "今日のチャットは雰囲気がいいね。", "バイブス（気分の高まりやその場のノリ）。"],
+  [41, "配信日常", "scam", "詐欺、騙し", "This game is a total scam.", "このゲーム、完全に詐欺じゃん。", "scam は「詐欺・詐欺的なもの」。単に「クソゲー」という意味とは限らず、金銭や宣伝などで騙されたというニュアンスがある。"],
+  [42, "配信日常", "legit", "マジで本物の、ガチな", "That clip was legit crazy.", "あのクリップはガチでヤバかった。", "Legitimate（合法な・本物の）の略（レジット）。"],
+  [43, "配信日常", "shoutout", "称賛・感謝を込めた紹介、言及", "Big shoutout to my supporters.", "応援してくれているみんなに感謝を伝えたい！", "配信などで人の名前を挙げて、感謝や称賛を伝えること。"],
+  [44, "配信日常", "hyped", "テンションが上がっている", "I am so hyped for this stream.", "この配信すごくワクワクしてる！", "Hype（ハイプ）の形容詞形。"],
+  [45, "配信日常", "banned", "BANされた、禁止された", "He got banned from Twitch.", "彼はTwitchでBANされた。", "バン（BAN・禁止）。配信でのアカウント停止。"],
+  [46, "配信日常", "baffled", "困惑した、当惑した", "I am totally baffled by this.", "これには完全に困惑してるよ。", "何かが理解できず、どう反応すればよいか分からない状態。baffling は「困惑させるような」。"],
+  [47, "配信日常", "sus", "怪しい（suspicious）", "Red is acting very sus.", "赤のプレイヤー、かなり怪しい動きをしている。", "suspicious（怪しい）の略。Among Us などのゲームやオンライン会話で使われる。"],
+  [48, "配信日常", "slaps", "（曲や食事が）最高、ヤバい", "This background music slaps.", "このBGMまじで最高だな。", "平手打ち（Slap）されるくらい衝撃的に最高なこと。"],
+  [49, "配信日常", "bet", "了解、いいよ、任せて", "Can you help me? - Bet!", "手伝ってくれる？ — いいよ！", "カジュアルな会話で「了解」「いいよ」という返事に使う。文脈によって意味が変わる。"]
 ];
 </script>
 <style>
@@ -78,6 +78,7 @@ const INITIAL_WORDS = [
   --ok:#127A55; --on-ok:#FFFFFF; --ng:#B4323B; --ng-bg:#FBE4E5;
   --it:#1F5FD6; --it-bg:#E1EBFD; --game:#B4510C; --game-bg:#FCE9D8; --life:#B02A6A; --life-bg:#FADFEC;
   --mark:#FFE58A; --mark-ink:#141A2E;
+  --c3:#12714F; --c3-bg:#DDF3E9; --c4:#6B3FC4; --c4-bg:#EBE3FA; --c5:#0A7486; --c5-bg:#D9F0F4; --c6:#8A6A00; --c6-bg:#FBF0C9; --c7:#4A5575; --c7-bg:#E4E8F2;
   --shadow:0 1px 2px rgba(20,26,46,.06),0 10px 28px rgba(20,26,46,.09);
   --font-body:"Noto Sans JP","Noto Sans CJK JP","Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic","Meiryo",sans-serif;
   --font-word:"Bricolage Grotesque","Noto Sans JP","Noto Sans CJK JP","Hiragino Sans","Noto Sans JP",system-ui,sans-serif;
@@ -89,6 +90,7 @@ const INITIAL_WORDS = [
     --ok:#4FD6A0; --on-ok:#06231A; --ng:#FF9096; --ng-bg:#43191D;
     --it:#8DB8FF; --it-bg:#15294D; --game:#FFAA6E; --game-bg:#452812; --life:#FF93C1; --life-bg:#451A31;
     --mark:#5B4A12; --mark-ink:#FFEBAE;
+    --c3:#6FE0AE; --c3-bg:#123A2B; --c4:#B9A0FF; --c4-bg:#2B1F52; --c5:#6ED6EA; --c5-bg:#0F3540; --c6:#F0CB5C; --c6-bg:#42350A; --c7:#B4BFDD; --c7-bg:#262F48;
     --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.4);
     color-scheme:dark;
   }
@@ -99,6 +101,7 @@ const INITIAL_WORDS = [
   --ok:#4FD6A0; --on-ok:#06231A; --ng:#FF9096; --ng-bg:#43191D;
   --it:#8DB8FF; --it-bg:#15294D; --game:#FFAA6E; --game-bg:#452812; --life:#FF93C1; --life-bg:#451A31;
   --mark:#5B4A12; --mark-ink:#FFEBAE;
+    --c3:#6FE0AE; --c3-bg:#123A2B; --c4:#B9A0FF; --c4-bg:#2B1F52; --c5:#6ED6EA; --c5-bg:#0F3540; --c6:#F0CB5C; --c6-bg:#42350A; --c7:#B4BFDD; --c7-bg:#262F48;
   --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 28px rgba(0,0,0,.4);
   color-scheme:dark;
 }
@@ -118,8 +121,11 @@ button{cursor:pointer}
 .stat b{font-family:var(--font-word);font-size:1.25rem;line-height:1.2;font-variant-numeric:tabular-nums}
 .stat b em{font-style:normal;font-size:.8rem;color:var(--muted);font-weight:600}
 
-.filters{display:flex;flex-wrap:wrap;gap:8px;padding:6px 16px 8px}
-.chipbtn{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:.9rem}
+.filters{display:flex;flex-direction:column;gap:8px;padding:6px 16px 8px}
+.filters .review{align-self:flex-start}
+.catrow{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+.catrow::-webkit-scrollbar{display:none}
+.chipbtn{flex:none;white-space:nowrap;min-height:40px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:.9rem}
 .chipbtn[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--on-accent)}
 .chipbtn.review{border-style:dashed;border-color:var(--accent);color:var(--accent)}
 .chipbtn.review[aria-pressed="true"]{border-style:solid;color:var(--on-accent)}
@@ -141,9 +147,14 @@ main>section[hidden]{display:none}
 .facetop{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .facetop .sp{flex:1}
 .chip{display:inline-flex;align-items:center;min-height:26px;padding:0 10px;border-radius:99px;font-size:.78rem;font-weight:700;white-space:nowrap}
-.chip.it{background:var(--it-bg);color:var(--it)}
-.chip.game{background:var(--game-bg);color:var(--game)}
-.chip.life{background:var(--life-bg);color:var(--life)}
+.chip.c0{background:var(--it-bg);color:var(--it)}
+.chip.c1{background:var(--game-bg);color:var(--game)}
+.chip.c2{background:var(--life-bg);color:var(--life)}
+.chip.c3{background:var(--c3-bg);color:var(--c3)}
+.chip.c4{background:var(--c4-bg);color:var(--c4)}
+.chip.c5{background:var(--c5-bg);color:var(--c5)}
+.chip.c6{background:var(--c6-bg);color:var(--c6)}
+.chip.c7{background:var(--c7-bg);color:var(--c7)}
 .chip.retry{background:var(--ng-bg);color:var(--ng)}
 .no{font-size:.78rem;color:var(--muted);font-variant-numeric:tabular-nums}
 .meter{display:inline-flex;gap:3px;align-items:flex-end}
@@ -187,6 +198,13 @@ mark{background:var(--mark);color:var(--mark-ink);border-radius:4px;padding:0 3p
 .tools input{flex:1;min-width:0}
 input[type=text],input[type=search],input[type=number],select,textarea{width:100%;min-height:48px;padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:var(--surface);font-size:16px;line-height:1.5}
 textarea{resize:vertical}
+input.num{width:84px;flex:none;text-align:center}
+.field{display:flex;align-items:center;justify-content:space-between;gap:12px;font-weight:700}
+.mixrow{display:flex;align-items:center;gap:8px}
+.mixrow .nm{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.mixrow .nm .chip{align-self:flex-start;max-width:100%;overflow:hidden;text-overflow:ellipsis}
+.mixrow .nm small{font-size:.74rem;color:var(--muted)}
+.btn.small{min-height:44px;padding:0 12px;font-size:.88rem;flex:none}
 .count{margin:0 0 8px;font-size:.82rem;color:var(--muted)}
 .words{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}
 .wrow{width:100%;display:flex;align-items:center;gap:10px;min-height:60px;padding:8px 12px;border-radius:14px;border:1px solid var(--line);background:var(--surface);text-align:left}
@@ -265,11 +283,13 @@ textarea{resize:vertical}
 <script>
 (function(){
 'use strict';
-var CATS=['IT','配信ゲーム','配信日常'];
-var CAT_CLASS={'IT':'it','配信ゲーム':'game','配信日常':'life'};
+// 分類は自由に増やせる。最初に入っている単語の分類と、新しい単語の出題割合の初期値。
+var DEFAULT_CATS=['IT','配信ゲーム','配信日常'];
+var DEFAULT_MIX={'IT':6,'配信ゲーム':2,'配信日常':2};
+var DEFAULT_PER_SESSION=10;
+var NCOLORS=8; // 分類の色の数（c0〜c7）。分類が多いと色は繰り返す。
 // 箱ごとの次回までの日数。箱1は「次のセッション」でもう一度出る。
 var INTERVALS={1:0,2:1,3:3,4:7,5:14};
-var NEW_PER_SESSION=10;
 var KEY='itgame-eitango.v1';
 var root=document.documentElement;
 var $=function(s){return document.querySelector(s)};
@@ -282,7 +302,23 @@ function dayDiff(a,b){var x=a.split('-').map(Number),y=b.split('-').map(Number);
 
 /* ---------- データの読み書き ---------- */
 var storageOk=true;
-function defaultPrefs(){return {cat:'all',review:false,theme:'auto'}}
+function defaultPrefs(){return {cat:'all',review:false,theme:'auto',mix:Object.assign({},DEFAULT_MIX),perSession:DEFAULT_PER_SESSION}}
+function cleanCat(s){return String(s==null?'':s).replace(/\s+/g,' ').trim().slice(0,30)}
+function cleanMix(m){
+  var out={};
+  if(m&&typeof m==='object') Object.keys(m).forEach(function(k){var v=parseInt(m[k],10),c=cleanCat(k);if(c&&v>=0&&v<=99) out[c]=v});
+  return out;
+}
+function cleanPer(n){n=parseInt(n,10);return n>=1&&n<=50?n:DEFAULT_PER_SESSION}
+// 分類の一覧（色の順番を保つため、保存済みの並びを優先し、使われていない分類は外す）
+function normCats(words,cats){
+  var used=Object.create(null),out=[];
+  words.forEach(function(w){used[w.cat]=1});
+  function add(c){c=cleanCat(c);if(c&&used[c]&&out.indexOf(c)<0) out.push(c)}
+  if(Array.isArray(cats)) cats.forEach(add);
+  words.forEach(function(w){add(w.cat)});
+  return out;
+}
 function seed(){return INITIAL_WORDS.map(function(r){return {no:r[0],cat:r[1],word:r[2],meaning:r[3],ex:r[4],exJa:r[5],mnemo:r[6],box:0,due:'',seen:0,ok:0,ng:0}})}
 function cleanWords(arr){
   if(!Array.isArray(arr)) return [];
@@ -291,11 +327,12 @@ function cleanWords(arr){
   arr.forEach(function(w){
     if(!w||typeof w!=='object') return;
     var word=String(w.word==null?'':w.word).trim(),meaning=String(w.meaning==null?'':w.meaning).trim();
-    if(!word||!meaning||CATS.indexOf(w.cat)<0) return;
+    var cat=cleanCat(w.cat);
+    if(!word||!meaning||!cat) return;
     var no=parseInt(w.no,10); if(!(no>0)||used[no]) no=++max; used[no]=1;
     var box=parseInt(w.box,10); if(!(box>=0&&box<=5)) box=0;
     var due=/^\d{4}-\d{2}-\d{2}$/.test(w.due)?w.due:''; if(box>=1&&!due) due=today(); if(box===0) due='';
-    out.push({no:no,cat:w.cat,word:word,meaning:meaning,ex:String(w.ex==null?'':w.ex),exJa:String(w.exJa==null?'':w.exJa),mnemo:String(w.mnemo==null?'':w.mnemo),box:box,due:due,seen:+w.seen||0,ok:+w.ok||0,ng:+w.ng||0});
+    out.push({no:no,cat:cat,word:word,meaning:meaning,ex:String(w.ex==null?'':w.ex),exJa:String(w.exJa==null?'':w.exJa),mnemo:String(w.mnemo==null?'':w.mnemo),box:box,due:due,seen:+w.seen||0,ok:+w.ok||0,ng:+w.ng||0});
   });
   out.sort(function(a,b){return a.no-b.no});
   return out;
@@ -303,34 +340,62 @@ function cleanWords(arr){
 function loadState(){
   try{
     var raw=localStorage.getItem(KEY);
-    if(raw){var o=JSON.parse(raw),ws=cleanWords(o.words);if(ws.length) return {words:ws,prefs:Object.assign(defaultPrefs(),o.prefs||{})}}
+    if(raw){var o=JSON.parse(raw),ws=cleanWords(o.words);if(ws.length) return fixState({words:ws,cats:o.cats,prefs:Object.assign(defaultPrefs(),o.prefs||{})})}
   }catch(e){storageOk=false}
-  return {words:seed(),prefs:defaultPrefs()};
+  return fixState({words:seed(),cats:DEFAULT_CATS.slice(),prefs:defaultPrefs()});
+}
+function fixState(st){
+  st.cats=normCats(st.words,st.cats);
+  st.prefs.mix=cleanMix(st.prefs.mix);
+  st.prefs.perSession=cleanPer(st.prefs.perSession);
+  return st;
 }
 var state=loadState();
 var prefs=state.prefs;
 function persist(){
+  state.cats=normCats(state.words,state.cats);
   try{localStorage.setItem(KEY,JSON.stringify(state))}catch(e){storageOk=false}
 }
 function byNo(no){for(var i=0;i<state.words.length;i++) if(state.words[i].no===no) return state.words[i];return null}
 function nextNo(){var m=0;state.words.forEach(function(w){if(w.no>m)m=w.no});return m+1}
 function filtered(){return state.words.filter(function(w){return prefs.cat==='all'||w.cat===prefs.cat})}
 function isDue(w,t){return w.box>=1&&w.due<=t}
+// 単語が1語以上ある分類だけを、色の順番どおりに返す
+function catList(){return normCats(state.words,state.cats)}
+function catClass(c){var i=state.cats.indexOf(c);return 'c'+(i<0?NCOLORS-1:i%NCOLORS)}
+function weightOf(c){return Object.prototype.hasOwnProperty.call(prefs.mix,c)?prefs.mix[c]:1}
+// 入力された分類名を整える。大文字小文字だけ違う既存の分類があれば、そちらに合わせる
+function resolveCat(s){
+  var c=cleanCat(s);if(!c) return '';
+  var low=c.toLowerCase(),all=state.cats;
+  for(var i=0;i<all.length;i++) if(all[i].toLowerCase()===low) return all[i];
+  return c;
+}
 
 /* ---------- セッション（間隔反復） ---------- */
 var ui={view:'study',session:null,forceAll:false};
 function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
-// 新しい単語は IT:配信ゲーム:配信日常 = 6:2:2 の割合で選ぶ。足りない分は他の分類で補う。
-var MIX={'IT':6,'配信ゲーム':2,'配信日常':2};
+// 新しい単語は、分類ごとの割合（prefs.mix）に比例して選ぶ。
+// 1語ずつ「割合に対して選ばれた数がいちばん少ない分類」から取る。
+// ある分類の未学習が足りなくなったら、残りの分類で埋める。0の分類は選ばない。
+// 分類で絞り込んでいるときは、その分類だけから選ぶ。
 function pickFresh(ws){
   var pool=ws.filter(function(w){return w.box===0}).sort(function(a,b){return a.no-b.no});
-  var picked=[],rest=[];
-  CATS.forEach(function(c){
-    var list=pool.filter(function(w){return w.cat===c}),n=MIX[c];
-    picked=picked.concat(list.slice(0,n));rest=rest.concat(list.slice(n));
-  });
-  rest.sort(function(a,b){return a.no-b.no});
-  picked=picked.concat(rest.slice(0,NEW_PER_SESSION-picked.length));
+  var single=prefs.cat!=='all',byCat=Object.create(null),cats=[];
+  pool.forEach(function(w){if(!byCat[w.cat]){byCat[w.cat]=[];cats.push(w.cat)}byCat[w.cat].push(w)});
+  cats=cats.filter(function(c){return single||weightOf(c)>0});
+  var cnt=Object.create(null),picked=[];
+  cats.forEach(function(c){cnt[c]=0});
+  while(picked.length<prefs.perSession){
+    var best=null,bs=0,bw=0;
+    cats.forEach(function(c){
+      if(cnt[c]>=byCat[c].length) return;
+      var wt=single?1:weightOf(c),sc=(cnt[c]+1)/wt;
+      if(best===null||sc<bs-1e-9||(Math.abs(sc-bs)<=1e-9&&wt>bw)){best=c;bs=sc;bw=wt}
+    });
+    if(best===null) break;
+    picked.push(byCat[best][cnt[best]++]);
+  }
   return shuffle(picked);
 }
 function startSession(){
@@ -386,7 +451,7 @@ function meter(box){
   for(var i=1;i<=5;i++) h+='<i class="'+(i<=box?'on':'')+'"></i>';
   return h+'</span>';
 }
-function chip(cat){return '<span class="chip '+CAT_CLASS[cat]+'">'+esc(cat)+'</span>'}
+function chip(cat){return '<span class="chip '+catClass(cat)+'">'+esc(cat)+'</span>'}
 function applyTheme(){if(prefs.theme==='light'||prefs.theme==='dark') root.setAttribute('data-theme',prefs.theme);else root.removeAttribute('data-theme')}
 function renderHeader(){
   var ws=filtered(),t=today();
@@ -395,9 +460,9 @@ function renderHeader(){
 }
 function renderFilters(){
   var f=$('#filters');f.hidden=ui.view==='data';
-  var h=[['all','すべて']].concat(CATS.map(function(c){return [c,c]})).map(function(p){
+  var h='<div class="catrow">'+[['all','すべて']].concat(catList().map(function(c){return [c,c]})).map(function(p){
     return '<button type="button" class="chipbtn" data-act="cat" data-v="'+esc(p[0])+'" aria-pressed="'+(prefs.cat===p[0])+'">'+esc(p[1])+'</button>';
-  }).join('');
+  }).join('')+'</div>';
   if(ui.view==='study') h+='<button type="button" class="chipbtn review" data-act="review" aria-pressed="'+prefs.review+'">今日の復習だけ</button>';
   f.innerHTML=h;
 }
@@ -456,10 +521,21 @@ function renderList(){
   }).join(''):'<li class="empty">該当する単語がありません。</li>';
 }
 function exportText(){
-  return '{"app":"it-haishin-eitango","v":1,"exported":"'+new Date().toISOString()+'","words":[\n'+state.words.map(function(w){return JSON.stringify(w)}).join(',\n')+'\n]}';
+  return '{"app":"it-haishin-eitango","v":2,"exported":"'+new Date().toISOString()+'","cats":'+JSON.stringify(state.cats)+',"mix":'+JSON.stringify(prefs.mix)+',"perSession":'+prefs.perSession+',"words":[\n'+state.words.map(function(w){return JSON.stringify(w)}).join(',\n')+'\n]}';
 }
 function themeBtns(){
   return [['auto','自動'],['light','ライト'],['dark','ダーク']].map(function(p){return '<button type="button" class="chipbtn" data-act="theme" data-v="'+p[0]+'" aria-pressed="'+(prefs.theme===p[0])+'">'+p[1]+'</button>'}).join('');
+}
+function settingsHtml(){
+  var rows=catList().map(function(c){
+    var tot=0,fr=0;state.words.forEach(function(w){if(w.cat===c){tot++;if(w.box===0)fr++}});
+    return '<div class="mixrow"><div class="nm">'+chip(c)+'<small>全'+tot+'語・未学習'+fr+'語</small></div>'+
+      '<input class="num" type="number" inputmode="numeric" min="0" max="99" data-cat="'+esc(c)+'" value="'+weightOf(c)+'" aria-label="'+esc(c)+'の割合">'+
+      '<button type="button" class="btn small" data-act="rencat" data-cat="'+esc(c)+'">名前変更</button></div>';
+  }).join('');
+  return '<div class="panel"><h3>出題の設定</h3>'+
+    '<label class="field">1セッションの新しい単語数<input id="perses" class="num" type="number" inputmode="numeric" min="1" max="50" value="'+prefs.perSession+'"></label>'+
+    '<p class="note">下の数字は、新しい単語を出すときの分類ごとの割合です（例：6・2・2）。0にすると、その分類の新しい単語は出ません。復習の単語には影響しません。変更は次のセッションから反映されます。</p>'+rows+'</div>';
 }
 function renderData(){
   var dist=[0,0,0,0,0,0];state.words.forEach(function(w){dist[w.box]++});
@@ -467,6 +543,7 @@ function renderData(){
   $('#datapane').innerHTML=
    '<div class="panel"><h3>学習の進み具合</h3><div class="dist">'+dist.map(function(n,i){return '<div><b>'+n+'</b><small>'+labels[i]+'</small></div>'}).join('')+'</div>'+
    '<p class="note">思い出せたら箱が1つ上がり、次の復習が遠くなります（箱2=1日後、箱3=3日後、箱4=7日後、箱5=14日後）。思い出せなかった単語は箱1に戻り、同じセッション内でもう一度出ます。そこで思い出せたら明日にもう一度復習し、続けて同じ単語が出ないようにしています。</p></div>'+
+   settingsHtml()+
    '<div class="panel"><h3>書き出し</h3><p class="note">単語データと進捗をテキストにしました。コピーして、メモなどに保存してください。</p>'+
    '<textarea id="exp" rows="5" readonly aria-label="書き出しテキスト"></textarea><button type="button" class="btn primary" data-act="copy">テキストをコピー</button></div>'+
    '<div class="panel"><h3>読み込み</h3><p class="note">書き出したテキストを貼り付けます。今の単語と進捗は、読み込んだ内容に置き換わります。</p>'+
@@ -482,7 +559,10 @@ function showView(){
   renderFilters();
   if(ui.view==='study') renderStudy();else if(ui.view==='list') renderList();else renderData();
 }
-function renderAll(){applyTheme();renderHeader();showView()}
+function renderAll(){
+  if(prefs.cat!=='all'&&!state.words.some(function(w){return w.cat===prefs.cat})) prefs.cat='all';
+  applyTheme();renderHeader();showView();
+}
 function resetSession(){ui.session=null}
 
 /* ---------- 小さな部品 ---------- */
@@ -495,7 +575,7 @@ function twice(key,btn,label,fn){
   armed[key]={l:orig,t:setTimeout(function(){delete armed[key];btn.textContent=orig;btn.classList.remove('armed')},4000)};
 }
 function openSheet(html){$('#sheetbody').innerHTML=html;$('#sheet').hidden=false}
-function closeSheet(){$('#sheet').hidden=true;$('#sheetbody').innerHTML='';ui.editing=null}
+function closeSheet(){$('#sheet').hidden=true;$('#sheetbody').innerHTML='';ui.editing=null;ui.renaming=null}
 function copyText(text,ta){
   var done=function(){toast('コピーしました')};
   if(navigator.clipboard&&navigator.clipboard.writeText){
@@ -510,11 +590,14 @@ function copyText(text,ta){
 /* ---------- 追加・編集・削除 ---------- */
 function openEdit(no){
   var w=no==null?null:byNo(no);
-  var d=w||{no:nextNo(),cat:prefs.cat!=='all'?prefs.cat:'IT',word:'',meaning:'',ex:'',exJa:'',mnemo:''};
+  var cl=catList();
+  var d=w||{no:nextNo(),cat:prefs.cat!=='all'?prefs.cat:(cl[0]||''),word:'',meaning:'',ex:'',exJa:'',mnemo:''};
+  var sel=cl.indexOf(d.cat)>=0?d.cat:(cl.length?cl[0]:'__new');
   ui.editing=w?w.no:null;
   openSheet('<form id="editForm" autocomplete="off" novalidate><h2>'+(w?'単語を編集':'単語を追加')+'</h2>'+
    '<div class="row2"><label>No.<input id="f-no" type="number" inputmode="numeric" min="1" value="'+d.no+'"></label>'+
-   '<label>分類<select id="f-cat">'+CATS.map(function(c){return '<option'+(c===d.cat?' selected':'')+'>'+esc(c)+'</option>'}).join('')+'</select></label></div>'+
+   '<label>分類<select id="f-cat">'+cl.map(function(c){return '<option value="'+esc(c)+'"'+(c===sel?' selected':'')+'>'+esc(c)+'</option>'}).join('')+'<option value="__new"'+(sel==='__new'?' selected':'')+'>＋新しい分類を作る</option></select></label></div>'+
+   '<label id="f-newwrap"'+(sel==='__new'?'':' hidden')+'>新しい分類名<input id="f-newcat" type="text" maxlength="30" placeholder="例：基本情報、医療用語、TOEIC"></label>'+
    '<label>単語<input id="f-word" type="text" value="'+esc(d.word)+'" autocapitalize="none" autocorrect="off" spellcheck="false"></label>'+
    '<label>意味<input id="f-meaning" type="text" value="'+esc(d.meaning)+'"></label>'+
    '<label>例文<textarea id="f-ex" rows="2" autocapitalize="none">'+esc(d.ex)+'</textarea></label>'+
@@ -526,7 +609,9 @@ function openEdit(no){
 function saveEdit(){
   var v=function(id){return $('#'+id).value.trim()};
   var no=parseInt(v('f-no'),10),cat=$('#f-cat').value,word=v('f-word'),meaning=v('f-meaning'),err=$('#f-err');
+  if(cat==='__new') cat=resolveCat($('#f-newcat').value);
   if(!(no>0)){err.textContent='No.は1以上の数字で入力してください。';return}
+  if(!cat){err.textContent='新しい分類の名前を入力してください。';return}
   if(!word){err.textContent='単語を入力してください。';return}
   if(!meaning){err.textContent='意味を入力してください。';return}
   var other=byNo(no),cur=ui.editing==null?null:byNo(ui.editing);
@@ -561,15 +646,8 @@ function normFields(f){
   if(i>=f.length) return null;
   return f.slice(0,4).concat([ex.join(', '),f[i],f.slice(i+1).join(',')]);
 }
-function mapCat(c){
-  if(CATS.indexOf(c)>=0) return c;
-  if(/^it$/i.test(c)) return 'IT';
-  if(c.indexOf('ゲーム')>=0) return '配信ゲーム';
-  if(c.indexOf('日常')>=0) return '配信日常';
-  return null;
-}
 function openBulk(){
-  openSheet('<h2>一括追加</h2><p class="note" style="margin:0;color:var(--muted);font-size:.88rem">1行に1語、「No.,分類,単語,意味,例文,例文の訳,覚え方」の順で貼り付けます。タブ区切り（表計算からのコピー）も使えます。No.を空にすると自動で番号を振り、すでにあるNo.は内容を更新します（進捗は残ります）。</p>'+
+  openSheet('<h2>一括追加</h2><p class="note" style="margin:0;color:var(--muted);font-size:.88rem">1行に1語、「No.,分類,単語,意味,例文,例文の訳,覚え方」の順で貼り付けます。タブ区切り（表計算からのコピー）も使えます。No.を空にすると自動で番号を振り、すでにあるNo.は内容を更新します（進捗は残ります）。分類は自由な名前を付けられ、まだない名前は新しい分類として自動で追加されます。</p>'+
    '<button class="btn" type="button" data-act="pickfile">Excel / CSVファイルを選ぶ</button><input id="bulkfile" type="file" hidden>'+
    '<p class="note" style="margin:0;color:var(--muted);font-size:.82rem">Excelは「No.」で始まる見出し行の次の行から、A〜G列を読みます。</p>'+
    '<label>貼り付け<textarea id="bulkta" rows="8" placeholder="103,配信日常,clutch,土壇場の活躍,He pulled off a clutch win.,彼が土壇場で勝利をもぎ取った。,クラッチ（ペダル）をつなぐように決定的な場面で決める" autocapitalize="none" spellcheck="false"></textarea></label>'+
@@ -585,24 +663,27 @@ function runBulk(){
 }
 // items: [{n:行番号, f:[No.,分類,単語,意味,例文,例文の訳,覚え方]}]
 function importRows(items){
-  var add=0,upd=0,errs=[];
+  var add=0,upd=0,errs=[],before=state.cats.slice();
   items.forEach(function(it){
     var idx=it.n-1,f=it.f.map(function(c){return String(c==null?'':c).trim()});
     if(!f.join('')) return;
     f=normFields(f);
     if(!f){errs.push((idx+1)+'行目: 項目が足りません');return}
     if(/^no\.?$/i.test(f[0])) return;
-    var cat=mapCat(f[1]);
-    if(!cat){errs.push((idx+1)+'行目: 分類が不明です（'+f[1]+'）');return}
+    var cat=resolveCat(f[1]);
+    if(!cat){errs.push((idx+1)+'行目: 分類が空です');return}
     if(!f[2]||!f[3]){errs.push((idx+1)+'行目: 単語か意味が空です');return}
     var no=parseInt(f[0],10),rec={cat:cat,word:f[2],meaning:f[3],ex:f[4],exJa:f[5],mnemo:f[6]},cur=no>0?byNo(no):null;
     if(cur){Object.assign(cur,rec);upd++}
     else{state.words.push(Object.assign({no:no>0?no:nextNo(),box:0,due:'',seen:0,ok:0,ng:0},rec));add++}
+    // 同じ取り込みの中で、大文字小文字だけ違う分類名が別々にならないようにする
+    if(state.cats.indexOf(cat)<0) state.cats.push(cat);
   });
   state.words.sort(function(a,b){return a.no-b.no});
   var m=$('#bulkmsg');
   if(add||upd){persist();resetSession();renderAll()}
-  var text='追加 '+add+' 件、更新 '+upd+' 件。'+(errs.length?' 取り込めなかった行: '+errs.slice(0,5).join(' ／ ')+(errs.length>5?' ほか':''):'');
+  var made=state.cats.filter(function(c){return before.indexOf(c)<0});
+  var text='追加 '+add+' 件、更新 '+upd+' 件。'+(made.length?' 新しい分類: '+made.join('、')+'。':'')+(errs.length?' 取り込めなかった行: '+errs.slice(0,5).join(' ／ ')+(errs.length>5?' ほか':''):'');
   if(!errs.length&&(add||upd)){closeSheet();toast(text);return}
   m=$('#bulkmsg');m.textContent=add||upd||errs.length?text:'取り込む行がありません。';m.className='msg '+(errs.length?'bad':'good');
 }
@@ -655,14 +736,49 @@ function readFile(file){
   fr.readAsArrayBuffer(file);
 }
 
+/* ---------- 出題の設定・分類の名前変更 ---------- */
+// 設定を変えたとき、まだ1枚も答えていない・カードを出し切った（または今日の分がない）なら、新しい設定で作り直す。
+// 学習の途中なら、途中のカードは消さずに次のセッションから反映する。
+function refreshIfFinished(){
+  var s=ui.session;
+  if(s&&(s.i===0||s.queue.length===0||s.i>=s.queue.length)) ui.session=null;
+}
+function openRename(old){
+  ui.renaming=old;
+  openSheet('<form id="renForm" autocomplete="off" novalidate><h2>分類の名前を変更</h2>'+
+   '<p class="note" style="margin:0;color:var(--muted);font-size:.88rem">すでにある分類と同じ名前にすると、2つの分類が1つにまとまります。</p>'+
+   '<label>新しい名前<input id="r-name" type="text" maxlength="30" value="'+esc(old)+'"></label>'+
+   '<p class="err" id="r-err" role="alert"></p>'+
+   '<div class="sheet-actions"><button class="btn primary" type="submit">保存</button><button class="btn" type="button" data-act="close">キャンセル</button></div></form>');
+}
+function saveRename(){
+  var old=ui.renaming,name=cleanCat($('#r-name').value);
+  if(old==null) return;
+  if(!name){$('#r-err').textContent='名前を入力してください。';return}
+  // 大文字小文字だけの変更は、そのまま新しい名前にする
+  var target=name.toLowerCase()===old.toLowerCase()?name:resolveCat(name);
+  if(target===old){closeSheet();return}
+  state.words.forEach(function(w){if(w.cat===old) w.cat=target});
+  var i=state.cats.indexOf(old);
+  if(i>=0&&state.cats.indexOf(target)<0) state.cats[i]=target;
+  if(!Object.prototype.hasOwnProperty.call(prefs.mix,target)&&Object.prototype.hasOwnProperty.call(prefs.mix,old)) prefs.mix[target]=prefs.mix[old];
+  delete prefs.mix[old];
+  if(prefs.cat===old) prefs.cat=target;
+  persist();closeSheet();resetSession();renderAll();toast('分類名を変更しました');
+}
+
 /* ---------- 書き出し・読み込み ---------- */
 function runImport(){
   var raw=$('#imp').value,m=$('#impmsg'),a=raw.indexOf('{'),b=raw.lastIndexOf('}');
   try{
     if(a<0||b<a) throw new Error('x');
-    var ws=cleanWords(JSON.parse(raw.slice(a,b+1)).words);
+    var o=JSON.parse(raw.slice(a,b+1)),ws=cleanWords(o.words);
     if(!ws.length) throw new Error('x');
-    state.words=ws;persist();resetSession();renderAll();toast(ws.length+'語を読み込みました');
+    state.words=ws;state.cats=normCats(ws,o.cats);
+    // 古い書き出し（分類の割合を含まないもの）を読み込んだときは、今の設定を残す
+    if(o.mix&&typeof o.mix==='object') prefs.mix=cleanMix(o.mix);
+    if(o.perSession) prefs.perSession=cleanPer(o.perSession);
+    persist();resetSession();renderAll();toast(ws.length+'語を読み込みました');
   }catch(e){m.textContent='読み込めませんでした。書き出したテキストを最初から最後まで貼り付けてください。';m.className='msg bad'}
 }
 
@@ -690,12 +806,20 @@ document.addEventListener('click',function(e){
   else if(a==='import') twice('imp',t,'もう一度押すと置き換え',runImport);
   else if(a==='theme'){prefs.theme=t.dataset.v;persist();applyTheme();$('#themeseg').innerHTML=themeBtns()}
   else if(a==='resetprog') twice('rp',t,'もう一度押すと進捗を消去',function(){state.words.forEach(function(w){w.box=0;w.due='';w.seen=0;w.ok=0;w.ng=0});persist();resetSession();renderAll();toast('進捗を消しました')});
-  else if(a==='resetall') twice('ra',t,'もう一度押すと初期化',function(){state.words=seed();persist();resetSession();renderAll();toast('最初の単語に戻しました')});
+  else if(a==='resetall') twice('ra',t,'もう一度押すと初期化',function(){state.words=seed();state.cats=DEFAULT_CATS.slice();prefs.mix=Object.assign({},DEFAULT_MIX);prefs.perSession=DEFAULT_PER_SESSION;persist();resetSession();renderAll();toast('最初の単語に戻しました')});
+  else if(a==='rencat') openRename(t.dataset.cat);
 });
-document.addEventListener('submit',function(e){e.preventDefault();if(e.target.id==='editForm') saveEdit()});
+document.addEventListener('submit',function(e){e.preventDefault();if(e.target.id==='editForm') saveEdit();else if(e.target.id==='renForm') saveRename()});
 $('#q').addEventListener('input',renderList);
 document.addEventListener('change',function(e){
-  if(e.target.id==='bulkfile'){var f=e.target.files&&e.target.files[0];readFile(f);e.target.value=''}
+  var el=e.target;
+  if(el.id==='bulkfile'){var f=el.files&&el.files[0];readFile(f);el.value=''}
+  else if(el.id==='f-cat'){var nw=$('#f-newwrap');if(nw){nw.hidden=el.value!=='__new';if(!nw.hidden)$('#f-newcat').focus()}}
+  else if(el.id==='perses'){prefs.perSession=cleanPer(el.value);el.value=prefs.perSession;persist();refreshIfFinished()}
+  else if(el.classList.contains('num')&&el.dataset.cat!=null){
+    var v=parseInt(el.value,10);if(!(v>=0)) v=0;v=Math.min(99,v);
+    prefs.mix[el.dataset.cat]=v;el.value=v;persist();refreshIfFinished();
+  }
 });
 document.addEventListener('keydown',function(e){
   if(e.key==='Escape'&&!$('#sheet').hidden){closeSheet();return}
