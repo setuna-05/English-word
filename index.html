@@ -319,7 +319,7 @@ function normCats(words,cats){
   words.forEach(function(w){add(w.cat)});
   return out;
 }
-function seed(){return INITIAL_WORDS.map(function(r){return {no:r[0],cat:r[1],word:r[2],meaning:r[3],ex:r[4],exJa:r[5],mnemo:r[6],box:0,due:'',seen:0,ok:0,ng:0}})}
+function seed(){return INITIAL_WORDS.map(function(r,i){return {no:i+1,cat:r[1],word:r[2],meaning:r[3],ex:r[4],exJa:r[5],mnemo:r[6],box:0,due:'',seen:0,ok:0,ng:0}})}
 function cleanWords(arr){
   if(!Array.isArray(arr)) return [];
   var used={},out=[],max=0;
@@ -549,6 +549,7 @@ function renderData(){
    '<div class="panel"><h3>読み込み</h3><p class="note">書き出したテキストを貼り付けます。今の単語と進捗は、読み込んだ内容に置き換わります。</p>'+
    '<textarea id="imp" rows="4" placeholder="ここに貼り付け" aria-label="読み込みテキスト"></textarea><p class="msg" id="impmsg" role="status"></p><button type="button" class="btn" data-act="import">読み込む</button></div>'+
    '<div class="panel"><h3>表示</h3><div class="seg" id="themeseg">'+themeBtns()+'</div></div>'+
+   '<div class="panel"><h3>番号の振り直し</h3><p class="note">今の並び順のまま、No.を1から順に振り直します。進捗は残ります。</p><button type="button" class="btn" data-act="renum">No.を1から振り直す</button></div>'+
    '<div class="panel"><h3>リセット</h3><button type="button" class="btn danger" data-act="resetprog">進捗だけ消す</button><button type="button" class="btn danger" data-act="resetall">最初の単語データに戻す</button>'+
    (storageOk?'':'<p class="msg bad">このブラウザでは保存領域が使えません。閉じると進捗が消えるので、書き出しで控えてください。</p>')+'</div>';
   $('#exp').value=exportText();
@@ -647,7 +648,7 @@ function normFields(f){
   return f.slice(0,4).concat([ex.join(', '),f[i],f.slice(i+1).join(',')]);
 }
 function openBulk(){
-  openSheet('<h2>一括追加</h2><p class="note" style="margin:0;color:var(--muted);font-size:.88rem">1行に1語、「No.,分類,単語,意味,例文,例文の訳,覚え方」の順で貼り付けます。タブ区切り（表計算からのコピー）も使えます。No.を空にすると自動で番号を振り、すでにあるNo.は内容を更新します（進捗は残ります）。分類は自由な名前を付けられ、まだない名前は新しい分類として自動で追加されます。</p>'+
+  openSheet('<h2>一括追加</h2><p class="note" style="margin:0;color:var(--muted);font-size:.88rem">1行に1語、「No.,分類,単語,意味,例文,例文の訳,覚え方」の順で貼り付けます。タブ区切り（表計算からのコピー）も使えます。同じ分類・同じ単語は内容を更新し（進捗は残ります）、ない単語は追加します。No.は自動で1から振り直すので、空欄でも構いません。分類は自由な名前を付けられ、まだない名前は新しい分類として自動で追加されます。</p>'+
    '<button class="btn" type="button" data-act="pickfile">Excel / CSVファイルを選ぶ</button><input id="bulkfile" type="file" hidden>'+
    '<p class="note" style="margin:0;color:var(--muted);font-size:.82rem">Excelは「No.」で始まる見出し行の次の行から、A〜G列を読みます。</p>'+
    '<label>貼り付け<textarea id="bulkta" rows="8" placeholder="103,配信日常,clutch,土壇場の活躍,He pulled off a clutch win.,彼が土壇場で勝利をもぎ取った。,クラッチ（ペダル）をつなぐように決定的な場面で決める" autocapitalize="none" spellcheck="false"></textarea></label>'+
@@ -661,6 +662,15 @@ function runBulk(){
   });
   importRows(items);
 }
+// 分類＋単語（大文字小文字は区別しない）で既存の単語を探す
+function findByKey(cat,word){
+  var k=(cat+'\u0001'+word).toLowerCase();
+  for(var i=0;i<state.words.length;i++){
+    var w=state.words[i];
+    if((w.cat+'\u0001'+w.word).toLowerCase()===k) return w;
+  }
+  return null;
+}
 // items: [{n:行番号, f:[No.,分類,単語,意味,例文,例文の訳,覚え方]}]
 function importRows(items){
   var add=0,upd=0,errs=[],before=state.cats.slice();
@@ -673,13 +683,14 @@ function importRows(items){
     var cat=resolveCat(f[1]);
     if(!cat){errs.push((idx+1)+'行目: 分類が空です');return}
     if(!f[2]||!f[3]){errs.push((idx+1)+'行目: 単語か意味が空です');return}
-    var no=parseInt(f[0],10),rec={cat:cat,word:f[2],meaning:f[3],ex:f[4],exJa:f[5],mnemo:f[6]},cur=no>0?byNo(no):null;
+    var rec={cat:cat,word:f[2],meaning:f[3],ex:f[4],exJa:f[5],mnemo:f[6]},cur=findByKey(cat,f[2]);
     if(cur){Object.assign(cur,rec);upd++}
-    else{state.words.push(Object.assign({no:no>0?no:nextNo(),box:0,due:'',seen:0,ok:0,ng:0},rec));add++}
+    else{state.words.push(Object.assign({no:nextNo(),box:0,due:'',seen:0,ok:0,ng:0},rec));add++}
     // 同じ取り込みの中で、大文字小文字だけ違う分類名が別々にならないようにする
     if(state.cats.indexOf(cat)<0) state.cats.push(cat);
   });
   state.words.sort(function(a,b){return a.no-b.no});
+  state.words.forEach(function(w,i){w.no=i+1});
   var m=$('#bulkmsg');
   if(add||upd){persist();resetSession();renderAll()}
   var made=state.cats.filter(function(c){return before.indexOf(c)<0});
@@ -808,6 +819,7 @@ document.addEventListener('click',function(e){
   else if(a==='resetprog') twice('rp',t,'もう一度押すと進捗を消去',function(){state.words.forEach(function(w){w.box=0;w.due='';w.seen=0;w.ok=0;w.ng=0});persist();resetSession();renderAll();toast('進捗を消しました')});
   else if(a==='resetall') twice('ra',t,'もう一度押すと初期化',function(){state.words=seed();state.cats=DEFAULT_CATS.slice();prefs.mix=Object.assign({},DEFAULT_MIX);prefs.perSession=DEFAULT_PER_SESSION;persist();resetSession();renderAll();toast('最初の単語に戻しました')});
   else if(a==='rencat') openRename(t.dataset.cat);
+  else if(a==='renum') twice('rn',t,'もう一度押すと振り直し',function(){state.words.sort(function(a,b){return a.no-b.no});state.words.forEach(function(w,i){w.no=i+1});persist();resetSession();renderAll();toast('No.を振り直しました')});
 });
 document.addEventListener('submit',function(e){e.preventDefault();if(e.target.id==='editForm') saveEdit();else if(e.target.id==='renForm') saveRename()});
 $('#q').addEventListener('input',renderList);
