@@ -320,21 +320,29 @@ function isDue(w,t){return w.box>=1&&w.due<=t}
 /* ---------- セッション（間隔反復） ---------- */
 var ui={view:'study',session:null,forceAll:false};
 function shuffle(a){for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+// 新しい単語は IT:配信ゲーム:配信日常 = 6:2:2 の割合で選ぶ。足りない分は他の分類で補う。
+var MIX={'IT':6,'配信ゲーム':2,'配信日常':2};
+function pickFresh(ws){
+  var pool=ws.filter(function(w){return w.box===0}).sort(function(a,b){return a.no-b.no});
+  var picked=[],rest=[];
+  CATS.forEach(function(c){
+    var list=pool.filter(function(w){return w.cat===c}),n=MIX[c];
+    picked=picked.concat(list.slice(0,n));rest=rest.concat(list.slice(n));
+  });
+  rest.sort(function(a,b){return a.no-b.no});
+  picked=picked.concat(rest.slice(0,NEW_PER_SESSION-picked.length));
+  return shuffle(picked);
+}
 function startSession(){
   var t=today(),ws=filtered(),mode=ui.forceAll?'all':(prefs.review?'review':'today'),base;
   if(mode==='all'){
     base=shuffle(ws.slice()).sort(function(a,b){return a.box-b.box});
   }else{
     var due=ws.filter(function(w){return isDue(w,t)}).sort(function(a,b){return a.box-b.box||a.due.localeCompare(b.due)||a.no-b.no});
-    var fresh=mode==='review'?[]:ws.filter(function(w){return w.box===0}).sort(function(a,b){return a.no-b.no}).slice(0,NEW_PER_SESSION);
+    var fresh=mode==='review'?[]:pickFresh(ws);
     base=due.concat(fresh);
   }
   var q=base.map(function(w){return {no:w.no,retry:false}});
-  // 前回思い出せなかった単語（箱1）は、同じセッション内でもう1回多く出す
-  base.filter(function(w){return w.box===1}).forEach(function(w){
-    var idx=q.findIndex(function(x){return x.no===w.no&&!x.retry});
-    q.splice(Math.min(idx+4,q.length),0,{no:w.no,retry:true});
-  });
   ui.session={queue:q,i:0,total:base.length,done:0,ok:0,ng:0,missed:[],flipped:false,revealed:false,mode:mode};
 }
 function grade(ok){
@@ -347,6 +355,8 @@ function grade(ok){
       else{w.ng++;w.box=1;w.due=today();s.ng++;if(s.missed.indexOf(w.no)<0)s.missed.push(w.no)}
       s.done++;
     }
+    // 同じセッション内の再挑戦で思い出せたら、今日はもう出さず、明日あらためて復習する
+    else if(ok&&w.box===1) w.due=addDays(today(),1);
     if(!ok) s.queue.splice(Math.min(s.i+4,s.queue.length),0,{no:w.no,retry:true});
   }
   s.i++;s.flipped=false;s.revealed=false;
@@ -395,6 +405,7 @@ function actionsHtml(s){
   if(!s.revealed) return '<button class="btn primary big wide" data-act="flip" type="button">答えを見る</button>';
   var item=s.queue[s.i],w=byNo(item.no),sub='';
   if(!item.retry&&w){var nb=w.box===0?2:Math.min(5,w.box+1),d=INTERVALS[nb];sub=d+'日後に復習'}
+  else if(item.retry) sub='明日もう一度復習';
   return '<button class="btn ng big" data-act="ng" type="button"><span>思い出せなかった</span><small>もう一度出します</small></button>'+
          '<button class="btn ok big" data-act="ok" type="button"><span>思い出せた</span><small>'+sub+'</small></button>';
 }
@@ -455,7 +466,7 @@ function renderData(){
   var labels=['未','箱1','箱2','箱3','箱4','箱5'];
   $('#datapane').innerHTML=
    '<div class="panel"><h3>学習の進み具合</h3><div class="dist">'+dist.map(function(n,i){return '<div><b>'+n+'</b><small>'+labels[i]+'</small></div>'}).join('')+'</div>'+
-   '<p class="note">思い出せたら箱が1つ上がり、次の復習が遠くなります（箱2=1日後、箱3=3日後、箱4=7日後、箱5=14日後）。思い出せなかった単語は箱1に戻り、次のセッションで先頭に出て、同じセッション内でも多めに出ます。</p></div>'+
+   '<p class="note">思い出せたら箱が1つ上がり、次の復習が遠くなります（箱2=1日後、箱3=3日後、箱4=7日後、箱5=14日後）。思い出せなかった単語は箱1に戻り、同じセッション内でもう一度出ます。そこで思い出せたら明日にもう一度復習し、続けて同じ単語が出ないようにしています。</p></div>'+
    '<div class="panel"><h3>書き出し</h3><p class="note">単語データと進捗をテキストにしました。コピーして、メモなどに保存してください。</p>'+
    '<textarea id="exp" rows="5" readonly aria-label="書き出しテキスト"></textarea><button type="button" class="btn primary" data-act="copy">テキストをコピー</button></div>'+
    '<div class="panel"><h3>読み込み</h3><p class="note">書き出したテキストを貼り付けます。今の単語と進捗は、読み込んだ内容に置き換わります。</p>'+
