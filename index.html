@@ -213,6 +213,11 @@ input.num{width:84px;flex:none;text-align:center}
 .wtxt small{color:var(--muted);font-size:.82rem;line-height:1.35;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .wno{font-size:.75rem;color:var(--muted);font-variant-numeric:tabular-nums;min-width:2.2em;text-align:right}
 .empty{padding:28px 8px;text-align:center;color:var(--muted)}
+.selbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:0 0 8px}
+.selbar .cnt{flex:1;min-width:6em;font-weight:700;font-size:.9rem}
+.wrow .ck{flex:none;width:24px;height:24px;border-radius:7px;border:2px solid var(--line);display:inline-flex;align-items:center;justify-content:center;background:var(--surface);color:var(--on-accent);font-size:15px;font-weight:800;line-height:1}
+.wrow.sel{border-color:var(--accent);background:var(--surface2)}
+.wrow.sel .ck{background:var(--accent);border-color:var(--accent)}
 
 /* data */
 .data .panel{align-items:stretch}
@@ -262,6 +267,14 @@ input.num{width:84px;flex:none;text-align:center}
         <input id="q" type="search" placeholder="単語・意味で検索" aria-label="検索" autocomplete="off">
         <button class="btn primary" data-act="add" type="button">追加</button>
         <button class="btn" data-act="bulk" type="button">一括</button>
+        <button class="btn" data-act="selmode" type="button" id="selbtn">選択</button>
+      </div>
+      <div class="selbar" id="selbar" hidden>
+        <span class="cnt" id="selcnt" role="status"></span>
+        <button class="btn small" data-act="selall" type="button">表示中を全選択</button>
+        <button class="btn small" data-act="selclear" type="button">解除</button>
+        <button class="btn small" data-act="selno" type="button">No.で選ぶ</button>
+        <button class="btn small danger" data-act="seldel" type="button" id="seldel">選択を削除</button>
       </div>
       <p class="count" id="count"></p>
       <div class="scroll"><ul class="words" id="wordlist"></ul></div>
@@ -516,9 +529,63 @@ function renderList(){
   var q=($('#q').value||'').trim().toLowerCase();
   var ws=filtered().filter(function(w){return !q||(w.word+' '+w.meaning).toLowerCase().indexOf(q)>=0});
   $('#count').textContent=ws.length+' 語'+(q?'（検索結果）':'');
+  var sm=!!ui.sel;
   $('#wordlist').innerHTML=ws.length?ws.map(function(w){
-    return '<li><button type="button" class="wrow" data-act="edit" data-no="'+w.no+'">'+chip(w.cat)+'<span class="wtxt"><b>'+esc(w.word)+'</b><small>'+esc(w.meaning)+'</small></span><span class="wno">'+w.no+'</span>'+meter(w.box)+'</button></li>';
+    var on=sm&&ui.sel[w.no];
+    return '<li><button type="button" class="wrow'+(on?' sel':'')+'" data-act="'+(sm?'pick':'edit')+'" data-no="'+w.no+'"'+(sm?' aria-pressed="'+(!!on)+'"':'')+'>'+(sm?'<span class="ck" aria-hidden="true">'+(on?'✓':'')+'</span>':'')+chip(w.cat)+'<span class="wtxt"><b>'+esc(w.word)+'</b><small>'+esc(w.meaning)+'</small></span><span class="wno">'+w.no+'</span>'+meter(w.box)+'</button></li>';
   }).join(''):'<li class="empty">該当する単語がありません。</li>';
+  updateSelUi();
+}
+/* ---------- 選択・削除 ---------- */
+function visibleWords(){
+  var q=($('#q').value||'').trim().toLowerCase();
+  return filtered().filter(function(w){return !q||(w.word+' '+w.meaning).toLowerCase().indexOf(q)>=0});
+}
+function selNos(){return ui.sel?Object.keys(ui.sel).map(Number).filter(function(n){return ui.sel[n]&&byNo(n)}):[]}
+function updateSelUi(){
+  var on=!!ui.sel,n=on?selNos().length:0;
+  $('#selbar').hidden=!on;
+  var b=$('#selbtn');b.textContent=on?'終了':'選択';b.setAttribute('aria-pressed',String(on));
+  $('#selcnt').textContent=n+' 語を選択中';
+  var d=$('#seldel');d.disabled=n===0;d.style.opacity=n===0?'.45':'';
+  if(typeof armed!=='undefined'&&armed.sd){clearTimeout(armed.sd.t);delete armed.sd;d.textContent='選択を削除';d.classList.remove('armed')}
+}
+function parseNos(text){
+  var s=String(text).replace(/[０-９]/g,function(c){return String.fromCharCode(c.charCodeAt(0)-65248)})
+    .replace(/\s*[-~〜～ーｰ−–—]\s*/g,'-'),out=[],bad=[];
+  s.split(/[,\s、，]+/).forEach(function(tok){
+    if(!tok) return;
+    var m=/^(\d+)-(\d+)$/.exec(tok);
+    if(m){var a=+m[1],b=+m[2];if(a>b){var t=a;a=b;b=t}if(b-a>5000){bad.push(tok);return}for(var i=a;i<=b;i++) out.push(i)}
+    else if(/^\d+$/.test(tok)) out.push(+tok);
+    else bad.push(tok);
+  });
+  return {nos:out,bad:bad};
+}
+function openSelNo(){
+  openSheet('<form id="selNoForm" autocomplete="off" novalidate><h2>No.で選ぶ</h2>'+
+   '<p class="note" style="margin:0;color:var(--muted);font-size:.88rem">削除したい単語のNo.を入力します。カンマか空白で区切り、範囲は「10-15」のように書けます（例：3, 5, 10-15）。今の選択に追加されます。</p>'+
+   '<label>No.<input id="sn-text" type="text" inputmode="text" placeholder="3, 5, 10-15" autocapitalize="none" spellcheck="false"></label>'+
+   '<p class="err" id="sn-err" role="alert"></p>'+
+   '<div class="sheet-actions"><button class="btn primary" type="submit">選択に追加</button><button class="btn" type="button" data-act="close">キャンセル</button></div></form>');
+  setTimeout(function(){var i=$('#sn-text');if(i)i.focus()},50);
+}
+function runSelNo(){
+  var r=parseNos($('#sn-text').value),err=$('#sn-err');
+  if(r.bad.length){err.textContent='読み取れない入力があります: '+r.bad.slice(0,3).join('、');return}
+  if(!r.nos.length){err.textContent='No.を入力してください。';return}
+  var hit=0,miss=[];
+  r.nos.forEach(function(n){if(byNo(n)){ui.sel[n]=true;hit++}else if(miss.indexOf(n)<0) miss.push(n)});
+  if(!hit){err.textContent='該当するNo.の単語がありません。';return}
+  closeSheet();renderList();
+  toast(hit+'語を選択しました'+(miss.length?'（見つからない番号: '+miss.slice(0,5).join('、')+(miss.length>5?' ほか':'')+'）':''));
+}
+function deleteSelected(){
+  var nos=selNos();if(!nos.length) return;
+  var set={};nos.forEach(function(n){set[n]=1});
+  state.words=state.words.filter(function(w){return !set[w.no]});
+  ui.sel=null;
+  persist();resetSession();renderAll();toast(nos.length+'語を削除しました');
 }
 function exportText(){
   return '{"app":"it-haishin-eitango","v":2,"exported":"'+new Date().toISOString()+'","cats":'+JSON.stringify(state.cats)+',"mix":'+JSON.stringify(prefs.mix)+',"perSession":'+prefs.perSession+',"words":[\n'+state.words.map(function(w){return JSON.stringify(w)}).join(',\n')+'\n]}';
@@ -564,7 +631,7 @@ function renderAll(){
   if(prefs.cat!=='all'&&!state.words.some(function(w){return w.cat===prefs.cat})) prefs.cat='all';
   applyTheme();renderHeader();showView();
 }
-function resetSession(){ui.session=null}
+function resetSession(){ui.session=null;ui.sel=null}
 
 /* ---------- 小さな部品 ---------- */
 var toastT;
@@ -808,6 +875,12 @@ document.addEventListener('click',function(e){
   else if(a==='next'){resetSession();renderHeader();renderStudy()}
   else if(a==='add') openEdit(null);
   else if(a==='edit') openEdit(parseInt(t.dataset.no,10));
+  else if(a==='selmode'){ui.sel=ui.sel?null:{};renderList()}
+  else if(a==='pick'){var pn=parseInt(t.dataset.no,10);if(ui.sel){if(ui.sel[pn]) delete ui.sel[pn];else ui.sel[pn]=true;renderList()}}
+  else if(a==='selall'){visibleWords().forEach(function(w){ui.sel[w.no]=true});renderList()}
+  else if(a==='selclear'){ui.sel={};renderList()}
+  else if(a==='selno') openSelNo();
+  else if(a==='seldel'){var sc=selNos().length;if(sc) twice('sd',t,'もう一度押すと'+sc+'語を削除',deleteSelected)}
   else if(a==='bulk') openBulk();
   else if(a==='bulkrun') runBulk();
   else if(a==='pickfile') $('#bulkfile').click();
@@ -821,7 +894,7 @@ document.addEventListener('click',function(e){
   else if(a==='rencat') openRename(t.dataset.cat);
   else if(a==='renum') twice('rn',t,'もう一度押すと振り直し',function(){state.words.sort(function(a,b){return a.no-b.no});state.words.forEach(function(w,i){w.no=i+1});persist();resetSession();renderAll();toast('No.を振り直しました')});
 });
-document.addEventListener('submit',function(e){e.preventDefault();if(e.target.id==='editForm') saveEdit();else if(e.target.id==='renForm') saveRename()});
+document.addEventListener('submit',function(e){e.preventDefault();if(e.target.id==='editForm') saveEdit();else if(e.target.id==='renForm') saveRename();else if(e.target.id==='selNoForm') runSelNo()});
 $('#q').addEventListener('input',renderList);
 document.addEventListener('change',function(e){
   var el=e.target;
