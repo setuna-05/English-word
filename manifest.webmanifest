@@ -1,7 +1,7 @@
 {
  "id": "./",
- "name": "IT・配信 英単語帳",
- "short_name": "英単語帳",
+ "name": "単語帳",
+ "short_name": "単語帳",
  "lang": "ja",
  "start_url": "./",
  "scope": "./",
