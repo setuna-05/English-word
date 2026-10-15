@@ -17,56 +17,16 @@
    分類は自由な名前でよい（同じ名前の単語が同じ分類になる）。
    初回起動時だけ、ここの内容が読み込まれます（その後はブラウザ内のデータが優先）。 */
 const INITIAL_WORDS = [
-  [1, "IT", "access", "アクセス、利用する／アクセス権", "Access is denied for this file.", "このファイルへのアクセスは拒否されました。", "「アクセス」と同じ。対象に近づく・利用できる状態になるイメージ。"],
-  [2, "IT", "grant", "付与する、与える、許可する", "Grant administrator rights to proceed.", "続行するには管理者権限を付与してください。", "権限や機会などを相手に与えるイメージ。"],
-  [3, "IT", "default", "既定値、初期設定", "Reset all settings to default.", "すべての設定を既定値に戻してください。", "「標準として設定されている状態」。スポーツの「不戦敗」という意味とは別なので注意。"],
-  [4, "IT", "prompt", "指示、入力を促す表示・メッセージ", "Enter your password at the prompt.", "プロンプトでパスワードを入力してください。", "コマンドプロンプトの prompt。「入力を促す表示」。動詞では「促す」（例：When prompted, enter…＝求められたら入力して）。"],
-  [5, "IT", "restrict", "制限する", "Network access is restricted.", "ネットワークへのアクセスが制限されています。", "Strict（厳しい）状態にして制限をかけること。"],
-  [6, "IT", "suspend", "一時停止する", "Your account has been suspended.", "アカウントが一時停止されました。", "sus（下に）＋pend（ぶら下げる）＝宙にぶら下げて止める。サスペンション、サスペンスも同じ語源。"],
-  [6, "IT", "override", "上書きする、優先する", "System settings will override user preferences.", "システム設定がユーザー設定より優先されます。", "Over（上に）Ride（乗る）で上書きして無効化する。"],
-  [7, "IT", "resolve", "解決する", "Restarting the PC will resolve the issue.", "PCの再起動で問題が解決します。", "re（再び）＋solve（解く）。もつれた問題を解いて片付けるイメージ。"],
-  [8, "IT", "apply", "適用する", "Click OK to apply the changes.", "OKをクリックして変更を適用してください。", "アプリ（アプリケーション）の語源。当てはめるイメージ。"],
-  [9, "IT", "temporary", "一時的な", "Delete temporary files to save space.", "容量を空けるため一時ファイルを削除します。", "Temp（テンプ）ファイルのこと。時間を限定した一時物。"],
-  [10, "IT", "exceed", "超える", "File size exceeds the maximum limit.", "ファイルサイズが最大制限を超えています。", "ex（外へ）＋ceed（進む）＝枠の外へ出る。proceed（前へ進む）、succeed と同じ -ceed。Excel（エクセル）とは別語源なので注意。"],
-  [11, "IT", "exemption", "免除、適用除外", "Add this program to the firewall exemption list.", "このプログラムをファイアウォールの除外リストに追加してください。", "exception（例外）と関連する語。exemption は義務・規則などの免除や適用除外を表す。"],
-  [12, "IT", "retrieve", "取得する、取り戻す", "Failed to retrieve user data.", "ユーザーデータの取得に失敗しました。", "レトリバー犬が獲物を取りに行って戻ってくるイメージ（retrieve が語源）。データを「復元する」は文脈によって restore がより適切。"],
-  [13, "IT", "execute", "実行する", "Execute the file as administrator.", "管理者としてファイルを実行します。", "エグゼクティブ（実行役員）や.exeファイル（実行ファイル）の語源。"],
-  [14, "IT", "allocate", "割り当てる", "Not enough memory allocated to this app.", "このアプリに割り当てられたメモリが不足しています。", "メモリや時間などの資源を、用途ごとに割り当てるイメージ。"],
-  [15, "IT", "conflict", "衝突、競合", "An IP address conflict was detected.", "IPアドレスの競合が検出されました。", "コンフリクト。複数の設定がぶつかり合うこと。"],
-  [16, "IT", "modify", "変更する", "Do you want to modify this setting?", "この設定を変更しますか？", "モッド（MOD）の語源「modify（変更・改造する）」。"],
-  [17, "IT", "destination", "目的地、送信先、保存先", "Select the destination folder.", "保存先のフォルダを選択してください。", "destination は「行き先・目的地」。ファイル操作では「保存先」や「出力先」にもなる。"],
-  [18, "IT", "initialize", "初期化する", "Initializing the device, please wait.", "デバイスを初期化中です。お待ちください。", "イニシャル（頭文字・最初）の状態に戻すこと。"],
-  [19, "IT", "bypassed", "回避された、スキップされた", "Security check was bypassed.", "セキュリティチェックが回避されました。", "バイパス道路のように、チェックを迂回して通り抜けること。"],
-  [20, "配信ゲーム", "nerf", "弱体化する", "This character got nerfed in the patch.", "このキャラはアプデで弱体化された。", "おもちゃの柔らかい銃（NERF）のように威力を弱くすること。"],
-  [21, "配信ゲーム", "buff", "強化する", "The damage was buffed in the update.", "アップデートでダメージが増加した。", "能力や性能を高めること。ゲームではキャラクターや武器などの「強化」を指す。"],
-  [22, "配信ゲーム", "carry", "チームを勝利に導く", "He carried the team to victory.", "彼がチームをキャリーして勝利に導いた。", "チームを背負って運ぶ（キャリーする）イメージ。"],
-  [23, "配信ゲーム", "spawn", "出現する、スポーンする", "Enemies spawn behind the building.", "敵が建物の後ろに出現する。", "モンスターがスポーン（発生）する。"],
-  [24, "配信ゲーム", "cooldown", "クールダウン、再使用待ち時間", "My ultimate is still on cooldown.", "ウルトがまだクールダウン中です。", "冷まして次に使えるようになるまでの待ち時間。"],
-  [25, "配信ゲーム", "stealth", "ステルス、隠密", "Use stealth to pass the guards.", "ステルスを使って警備兵に見つからずに通り抜けよう。", "ステルス戦闘機のように、見つからないように行動するイメージ。"],
-  [26, "配信ゲーム", "toxic", "有害な、攻撃的な、迷惑な（言動をする）", "That player was so toxic in chat.", "あのプレイヤーはチャットでかなり攻撃的な発言をしていた。", "「毒のある」が基本イメージ。オンラインでは暴言や嫌がらせをする言動にも使う。"],
-  [27, "配信ゲーム", "dodge", "かわす、回避する", "I dodged the attack just in time.", "間一髪で攻撃を回避した。", "ドッジボールの dodge（よける）と同じ。"],
-  [28, "配信ゲーム", "loot", "戦利品を集める、漁る", "Let us loot this house first.", "まずこの家を漁ろう。", "ルート（戦利品・ドロップアイテム）を拾うこと。"],
-  [29, "配信ゲーム", "smurf", "初心者狩りをする", "That's definitely a smurf account.", "あれは絶対にスマーフ用のアカウントだ。", "本来の実力より低いランク帯でプレイするために作った別アカウントを指すことが多い。そうした行為を smurfing と呼ぶ。青いキャラ「スマーフ」が語源という説が有力。"],
-  [30, "配信ゲーム", "tilt", "イライラしてプレイが雑になる", "Don't get tilted after losing.", "負けた後にティルト（イライラ）しないで。", "ピンボール台を傾ける（ティルト）ことからキレる状態。"],
-  [31, "配信ゲーム", "flank", "側面から攻撃する、裏取りする", "They are flanking us from the left.", "敵が左側から裏取りしてきている。", "敵の側面に回り込んで攻撃するイメージ。ゲームでは「裏取り」もよく使われる訳。"],
-  [32, "配信ゲーム", "inting", "わざと不利になる行為をする（意図的なフィード）", "Stop inting and stay safe.", "わざと突っ込んで倒されるのはやめて、安全に立ち回ろう。", "intentional feeding（意図的に敵へキルなどを与える行為）に由来するゲーム用語。使われ方はゲームによって異なる。"],
-  [33, "配信ゲーム", "feed", "敵に倒されて、相手を有利にしてしまう", "Please do not feed the enemy assassin.", "敵のアサシンにキルを与えないで。", "餌（feed）を与えるように、敵へキルや経験値などを与えて有利にしてしまうイメージ。"],
-  [34, "配信ゲーム", "taunt", "煽る、挑発する", "The boss will taunt you first.", "ボスが最初に煽ってくるよ。", "ゲーム内の挑発エモートなどのこと。"],
-  [35, "配信日常", "gotta", "〜しなければならない（have got to）", "I gotta go now, see you later.", "もう行かなきゃ、またね！", "got to の口語形（ガタ）。日常配信でよく使う。"],
-  [36, "配信日常", "kind of", "なんか、ちょっと（kinda）", "It's kind of weird today.", "今日はなんか変だね。", "「ちょっと」「なんとなく」「ある程度」。会話では kinda と短く発音・表記されることもある。"],
-  [37, "配信日常", "wholesome", "心温まる、健全な、ほほえましい", "That was such a wholesome moment.", "今のはすごく心が温まるシーンだったね。", "心が温まるような、安心できる雰囲気を表す。Whole + Health という語源説明ではなく、意味と使われ方で覚えよう。"],
-  [38, "配信日常", "cringe", "ドン引きする、痛々しい", "His joke was so cringe.", "彼のジョークはすごくドン引きだった。", "身縮み（クリンジ）するような恥ずかしさ。"],
-  [39, "配信日常", "cap", "嘘、ハッタリ", "No cap, that was amazing.", "嘘偽りなく、今のはすごかった。", "cap はスラングで「嘘・ハッタリ」。No cap は「嘘じゃなく」「マジで」という意味。"],
-  [40, "配信日常", "vibes", "雰囲気、ノリ", "Good vibes in the chat today.", "今日のチャットは雰囲気がいいね。", "バイブス（気分の高まりやその場のノリ）。"],
-  [41, "配信日常", "scam", "詐欺、騙し", "This game is a total scam.", "このゲーム、完全に詐欺じゃん。", "scam は「詐欺・詐欺的なもの」。単に「クソゲー」という意味とは限らず、金銭や宣伝などで騙されたというニュアンスがある。"],
-  [42, "配信日常", "legit", "マジで本物の、ガチな", "That clip was legit crazy.", "あのクリップはガチでヤバかった。", "Legitimate（合法な・本物の）の略（レジット）。"],
-  [43, "配信日常", "shoutout", "称賛・感謝を込めた紹介、言及", "Big shoutout to my supporters.", "応援してくれているみんなに感謝を伝えたい！", "配信などで人の名前を挙げて、感謝や称賛を伝えること。"],
-  [44, "配信日常", "hyped", "テンションが上がっている", "I am so hyped for this stream.", "この配信すごくワクワクしてる！", "Hype（ハイプ）の形容詞形。"],
-  [45, "配信日常", "banned", "BANされた、禁止された", "He got banned from Twitch.", "彼はTwitchでBANされた。", "バン（BAN・禁止）。配信でのアカウント停止。"],
-  [46, "配信日常", "baffled", "困惑した、当惑した", "I am totally baffled by this.", "これには完全に困惑してるよ。", "何かが理解できず、どう反応すればよいか分からない状態。baffling は「困惑させるような」。"],
-  [47, "配信日常", "sus", "怪しい（suspicious）", "Red is acting very sus.", "赤のプレイヤー、かなり怪しい動きをしている。", "suspicious（怪しい）の略。Among Us などのゲームやオンライン会話で使われる。"],
-  [48, "配信日常", "slaps", "（曲や食事が）最高、ヤバい", "This background music slaps.", "このBGMまじで最高だな。", "平手打ち（Slap）されるくらい衝撃的に最高なこと。"],
-  [49, "配信日常", "bet", "了解、いいよ、任せて", "Can you help me? - Bet!", "手伝ってくれる？ — いいよ！", "カジュアルな会話で「了解」「いいよ」という返事に使う。文脈によって意味が変わる。"]
+  [1, "配信ゲーム", "nerf", "弱体化する", "This character got nerfed in the patch.", "このキャラはアプデで弱体化された。", "おもちゃの柔らかい銃（NERF）のように威力を弱くすること。"],
+  [2, "配信ゲーム", "buff", "強化する", "The damage was buffed in the update.", "アップデートでダメージが増加した。", "能力や性能を高めること。ゲームではキャラクターや武器などの「強化」を指す。"],
+  [3, "配信ゲーム", "loot", "戦利品を集める、漁る", "Let us loot this house first.", "まずこの家を漁ろう。", "ルート（戦利品・ドロップアイテム）を拾うこと。"],
+  [4, "配信ゲーム", "inting", "わざと不利になる行為をする（意図的なフィード）", "Stop inting and stay safe.", "わざと突っ込んで倒されるのはやめて、安全に立ち回ろう。", "intentional feeding（意図的に敵へキルなどを与える行為）に由来するゲーム用語。使われ方はゲームによって異なる。"],
+  [5, "配信ゲーム", "taunt", "煽る、挑発する", "The boss will taunt you first.", "ボスが最初に煽ってくるよ。", "ゲーム内の挑発エモートなどのこと。"],
+  [6, "配信日常", "gotta", "〜しなければならない（have got to）", "I gotta go now, see you later.", "もう行かなきゃ、またね！", "got to の口語形（ガタ）。日常配信でよく使う。"],
+  [7, "配信日常", "kind of", "なんか、ちょっと（kinda）", "It's kind of weird today.", "今日はなんか変だね。", "「ちょっと」「なんとなく」「ある程度」。会話では kinda と短く発音・表記されることもある。"],
+  [8, "配信日常", "sus", "怪しい（suspicious）", "Red is acting very sus.", "赤のプレイヤー、かなり怪しい動きをしている。", "suspicious（怪しい）の略。Among Us などのゲームやオンライン会話で使われる。"],
+  [9, "配信日常", "slaps", "（曲や食事が）最高、ヤバい", "This background music slaps.", "このBGMまじで最高だな。", "平手打ち（Slap）されるくらい衝撃的に最高なこと。"],
+  [10, "日常英単語", "drawer", "引き出し", "Put the socks in the top drawer.", "靴下は一番上の引き出しに入れてね。", "draw（引く）＋ er（もの）＝引いて開けるもの。発音は「ドロー」。"]
 ];
 </script>
 <style>
@@ -297,8 +257,8 @@ input.num{width:84px;flex:none;text-align:center}
 (function(){
 'use strict';
 // 分類は自由に増やせる。最初に入っている単語の分類と、新しい単語の出題割合の初期値。
-var DEFAULT_CATS=['IT','配信ゲーム','配信日常'];
-var DEFAULT_MIX={'IT':6,'配信ゲーム':2,'配信日常':2};
+var DEFAULT_CATS=['日常英単語','配信ゲーム','配信日常'];
+var DEFAULT_MIX={'日常英単語':6,'配信ゲーム':2,'配信日常':2};
 var DEFAULT_PER_SESSION=10;
 var NCOLORS=8; // 分類の色の数（c0〜c7）。分類が多いと色は繰り返す。
 // 箱ごとの次回までの日数。箱1は「次のセッション」でもう一度出る。
